@@ -103,7 +103,7 @@ int main() {
     // ---------------------------------------------
     double max_grad_err = 0.0;
     
-    auto check_params = [&](const DenseLayer::LayerParams& std_p, const DenseLayer::LayerParams& opt_p) {
+    auto check_params = [&](const LayerParams& std_p, const LayerParams& opt_p) {
         for (size_t i = 0; i < std_p.w_nodes.size(); ++i) {
             double err = std::abs(grads_std[std_p.w_nodes[i].tape_idx] - grads_opt[opt_p.w_nodes[i].tape_idx]);
             max_grad_err = std::max(max_grad_err, err);
