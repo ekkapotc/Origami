@@ -34,7 +34,7 @@ public:
         return true;
     }
     
-    bool is_empty() const {
+    /*bool is_empty() const {
         return head.load(std::memory_order_acquire) == tail.load(std::memory_order_acquire);
-    }
+    }*/
 };
