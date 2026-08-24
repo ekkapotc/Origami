@@ -1,5 +1,6 @@
 CXX      := g++
 CXXFLAGS := -std=c++17 -O3 -Wall -Wextra -pthread -Iinc
+LDFLAGS  := -pthread
 
 SRC_DIR   := src
 INC_DIR   := inc
@@ -15,10 +16,16 @@ LIB_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(LIB_SRCS))
 EX_SRCS := $(wildcard $(EX_DIR)/*.cpp)
 EX_BINS := $(patsubst $(EX_DIR)/%.cpp,$(BIN_DIR)/%,$(EX_SRCS))
 
-.PHONY: all clean run
+.PHONY: all clean run tsan
 
 # Default target: builds all discovered executables
 all: $(EX_BINS)
+
+# Build with ThreadSanitizer enabled
+# Forces a clean build to prevent mixing uninstrumented and instrumented object files
+tsan: CXXFLAGS += -fsanitize=thread -g -O1
+tsan: LDFLAGS  += -fsanitize=thread
+tsan: clean all
 
 # Compile core library object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
@@ -26,7 +33,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 
 # Compile and link individual driver files from examples/ into bin/
 $(BIN_DIR)/%: $(EX_DIR)/%.cpp $(LIB_OBJS) | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $< $(LIB_OBJS) -o $@
+	$(CXX) $(CXXFLAGS) $< $(LIB_OBJS) -o $@ $(LDFLAGS)
 
 # Create output directories if they don't exist
 $(BUILD_DIR) $(BIN_DIR):
