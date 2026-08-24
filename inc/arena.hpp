@@ -34,7 +34,7 @@ public:
     }
 
     inline const T& operator[](size_t idx) const {
-        return (*chunks[idx >> CHUNK_SHIFT])[idx & CHUNK_MASK];
+      return (*chunks[idx >> CHUNK_SHIFT].load(std::memory_order_acquire))[idx & CHUNK_MASK];
     }
 
     size_t size() const { return count.load(std::memory_order_acquire); }
